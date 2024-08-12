@@ -28,7 +28,7 @@ gcc
 
 ```bash
 cmake .
-make
+make -j
 ```
 
 Clang
@@ -36,7 +36,7 @@ Clang
 ```bash
 rm -rf CMakeFiles CMakeCache.txt cmake_install.cmake
 CC=/usr/bin/clang CXX=/usr/bin/clang++ cmake .
-make
+make -j
 ```
 
 Generates securityheaders_example and securityheaders_test.
