@@ -62,16 +62,28 @@ Include security_headers.h:
 #include "security_headers.h"
 ```
 
-Get the security headers:
+Print out the headers:
 ```cpp
 security_headers::policy p;
 p.strict_transport_security_max_age_days = 365;
 const auto&& headers = security_headers::GetSecurityHeaders(p);
-```
 
-Print out the headers:
-```cpp
 for (auto&& h : headers) {
   std::cout<<h.name<<": "<<h.value<<std::endl;
+}
+```
+
+Or, add them to a libmicrohttpd HTTP response:
+```cpp
+void ServerAddSecurityHeaders(struct MHD_Response* response)
+{
+  // NOTE: The headers are very static, so you could just call this once and reuse the result for all responses
+  security_headers::policy p;
+  p.strict_transport_security_max_age_days = 365;
+  const auto&& headers = security_headers::GetSecurityHeaders(p);
+
+  for (auto&& h : headers) {
+    MHD_add_response_header(response, h.name.c_str(), h.value.c_str());
+  }
 }
 ```
