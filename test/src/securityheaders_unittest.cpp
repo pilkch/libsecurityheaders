@@ -27,3 +27,32 @@ TEST(SecurityHeaders, TestSecurityHeaders)
   EXPECT_STREQ(headers[8].name.c_str(), "cross-origin-resource-policy");
   EXPECT_STREQ(headers[8].value.c_str(), "same-origin");
 }
+
+TEST(SecurityHeaders, TestMaxAge)
+{
+  security_headers::policy p;
+
+  {
+    p.strict_transport_security_max_age_days = 0;
+    const auto&& headers = security_headers::GetSecurityHeaders(p);
+
+    EXPECT_STREQ(headers[0].name.c_str(), "strict-transport-security");
+    EXPECT_STREQ(headers[0].value.c_str(), "max-age=0; includeSubDomains; preload");
+  }
+
+  {
+    p.strict_transport_security_max_age_days = 365;
+    const auto&& headers = security_headers::GetSecurityHeaders(p);
+
+    EXPECT_STREQ(headers[0].name.c_str(), "strict-transport-security");
+    EXPECT_STREQ(headers[0].value.c_str(), "max-age=31536000; includeSubDomains; preload");
+  }
+
+  {
+    p.strict_transport_security_max_age_days = 10 * 365;
+    const auto&& headers = security_headers::GetSecurityHeaders(p);
+
+    EXPECT_STREQ(headers[0].name.c_str(), "strict-transport-security");
+    EXPECT_STREQ(headers[0].value.c_str(), "max-age=315360000; includeSubDomains; preload");
+  }
+}
